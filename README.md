@@ -21,7 +21,9 @@ BaggageTrackPlus is an innovative solution designed to simplify and enhance the 
 
 ## 📽️ Live Demo (Coming Soon)
 
-Stay tuned for an interactive demo of our platform!
+[Stay tuned for an interactive demo of our platform!](https://github.com/Prathamesh06203/BaggageTrack/blob/main/media/video.mp4
+
+<video width="100%" height="auto" controls> <source src="media/video.mp4" type="video/mp4"> Your browser does not support the video tag. </video>)
 
 ---
 
@@ -76,11 +78,15 @@ python app.py
 | Name | Role |
 |------|------|
 | Prathamesh Kshirsagar | Project Lead, Frontend Developer |
+| Aditya Bhalerao | c++ Developer, Sensor Specialist |
 | Trupti Gunjal | Frontend Developer, Data Integration Expert |
+| Sara Gaidhane | Backend Developer, Documentaion |
 
 ## 🎥 Animations in Action
 
 Here's how the app works in real-time:
+
+<div style="display: flex; justify-content: space-between;"> <img src="media/img1.jpg" alt="App Animation 1" width="45%"> <img src="media/img1.jpg" alt="App Animation 2" width="45%"> </div>
 
 ## 💡 Future Enhancements
 
@@ -88,9 +94,11 @@ Here's how the app works in real-time:
 * Introduce support for multi-language interfaces.
 * Real-time notifications for baggage status changes.
 
-## 🖼️ Screenshots
 
-*A glimpse of the web interface.*
+🖼️ Screenshots
+A glimpse of the web interface.
+
+<img src="media/img1.jpg" alt="Screenshot 1" width="100%"> <img src="media/img2.jpg" alt="Screenshot 2" width="100%">
 
 ## 💬 Contribute
 
