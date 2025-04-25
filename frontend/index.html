@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luggage Damage Monitoring System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <style>
+        .damage-alert {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .dashboard-card {
+            transition: all 0.3s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .sensor-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .gauge-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .gauge-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #f4f4f4;
+            position: absolute;
+        }
+        .gauge-fill {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 0 100%, 0 0, 50% 0);
+            background: linear-gradient(90deg, #4CAF50, #FFC107, #F44336);
+            position: absolute;
+            transform-origin: center;
+        }
+        .gauge-center {
+            width: 70%;
+            height: 70%;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 0.15em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border .75s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-suitcase-rolling me-2"></i>
+                Luggage Damage Monitoring
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html"><i class="fas fa-clipboard-list me-1"></i> Damage Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-cog me-1"></i> Settings</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Current Status</h2>
+                    <div class="form-group">
+                        <select class="form-select" id="luggageTypeSelector">
+                            <option value="0">American Tourister</option>
+                            <option value="1">Skybags</option>
+                            <option value="2">Samsonite</option>
+                            <option value="3">Tumi</option>
+                            <option value="4">Delsey</option>
+                            <option value="5">VIP</option>
+                            <option value="6">Travelpro</option>
+                            <option value="7">Rimowa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Luggage Information</h5>
+                            <span class="badge bg-primary" id="currentBrand">American Tourister</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3" id="damageStatus">
+                                <i class="fas fa-check-circle text-success fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0" id="statusText">No Damage Detected</h5>
+                                <small class="text-muted" id="lastUpdate">Last updated: Just now</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card dashboard-card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Impact</h6>
+                                <div class="gauge-container">
+                                    <div class="gauge-bg"></div>
+                                    <div class="gauge-fill" id="impactGauge" style="transform: rotate(0deg);"></div>
+                                    <div class="gauge-center" id="impactValue">0 g</div>
+                                </div>
+                                <small class="text-muted d-block mt-2">Max: <span id="maxImpact">0 g</span></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card dashboard-card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Temperature</h6>
+                                <div class="gauge-container">
+                                    <div class="gauge-bg"></div>
+                                    <div class="gauge-fill" id="tempGauge" style="transform: rotate(0deg);"></div>
+                                    <div class="gauge-center" id="tempValue">0°C</div>
+                                </div>
+                                <small class="text-muted d-block mt-2">Range: -30°C to 70°C</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card dashboard-card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Vibration</h6>
+                                <div class="sensor-value" id="vibrationValue">0</div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-info" id="vibrationBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card dashboard-card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <h6 class="card-subtitle mb-2 text-muted">Light Level</h6>
+                                <div class="sensor-value" id="lightValue">0%</div>
+                                <div class="progress mt-2">
+                                    <div class="progress-bar bg-warning" id="lightBar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h2>Recent Activity</h2>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" id="activityList">
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">System initialized</h6>
+                                    <small class="text-muted">Just now</small>
+                                </div>
+                                <p class="mb-1">Waiting for data...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Damage Reports</h2>
+                <div id="damageReports">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No damage reports yet. <a href="reports.html" class="alert-link">View all reports</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
